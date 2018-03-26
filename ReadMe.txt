@@ -1,6 +1,6 @@
 ---  3/26/18  -  Gitinit launch
 
-NOTE: You must change the repositories of this script manually in the .ahk code before using it to full capacity, by default the repository is CreateNewRepo/Sandbox.
+NOTE: You must change the repositories of this script manually in the .ahk code before using it to full capacity, by default the repository is GitinitAHK/Sandbox.
 
 See https://github.com/Contactician/Gitinit.AHK/wiki for visual guides, hotkey chart and flowchart.
 
