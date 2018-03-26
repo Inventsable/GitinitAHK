@@ -1,4 +1,6 @@
-; 3/25/2018
+; 3/25/2018 Gitinit
+; !Change Repositories is currently disabled
+
 #NoEnv
 #SingleInstance, Force
 SendMode Input
@@ -18,6 +20,8 @@ global 		CurrDirectory := Directory1
 
 Gosub, GenerateMenu
 Gosub, DirectoryPreview
+
+; Most of this script is written in long-hand to make it easier for any one new to AHK to understand, modify and use.
 
 ; Comments are made with a semi-colon. Anything to the right of a semi-colon can't be seen by AHK, for humans only.
 
