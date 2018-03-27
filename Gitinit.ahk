@@ -1,5 +1,10 @@
-; 3/25/2018 Gitinit
-; !Change Repositories is currently disabled
+; 3/25/18 Gitinit created
+; 3/26/18 Published to GitHub
+; 3/27/18 Solved Change Directories reporting non-existent menu item, now enabled. Added username icon, pushed others down.
+; 3/27/18 Created prompt for Username, hotkey for GitHub launch on Chrome, right arrow key for .html, .css, .txt generation
+
+; TO - DO
+	; Auto-complete for username on prompt
 
 #NoEnv
 #SingleInstance, Force
@@ -17,7 +22,7 @@ global  	GitTitleNum, GitTitleCut, GitLength, GitTitle, NewGitTitle, GitFolderNu
 	 		Directory3 = %A_MyDocuments%\GitMaster
 global 		CurrDirectory := Directory1
 
-
+Gosub, InputUsername
 Gosub, GenerateMenu
 Gosub, DirectoryPreview
 
@@ -208,6 +213,10 @@ F19::
 Return
 
 
+
+
+
+
 ; Scan directory folder for Git
 ScanGit:
 	WinActivate, ahk_exe mintty.exe
@@ -239,7 +248,7 @@ Gosub ScanGit
 		WinWait, %GitFolder% ahk_class CabinetWClass,, 2
 		If ErrorLevel
 		{
-			MsgBox Explorer failed
+			MsgBox, 16, Explorer failed
 		}
 	} Else {
 		WinActivate, %GitFolder% ahk_class CabinetWClass
@@ -264,7 +273,7 @@ Gosub, ScanGit
 ;Macro File Tree
 	InputBox, RepoVar, Create a new repository, Enter name:,,, 100
 		if ErrorLevel {
-			MsgBox % "Repository cancelled"
+			MsgBox, 16, Repository cancelled, You've interrupted the script.
 			Return
 		}
 	RepoVar :=  StrReplace(RepoVar, A_Space, "-")	
@@ -281,7 +290,7 @@ Gosub, ScanGit
 
 	InputBox, ReadMeVar, Create a ReadMe, Enter a short description:,,, 100
 		if ErrorLevel {
-			MsgBox % "ReadMe cancelled"
+			MsgBox, 16, ReadMe cancelled, You've interrupted the script.
 			Return
 		}
 
@@ -332,7 +341,7 @@ Return
 	PushRepo:
 	InputBox, GitHubVar, Submit link to sync, Paste your GitHub link here:,,, 100
 		if ErrorLevel {
-			MsgBox % "Linking cancelled"
+			MsgBox, 16, Linking cancelled, You've interrupted the script.
 			Return
 		}
 
@@ -359,6 +368,8 @@ Return
 
 	SendInput, git{Space}push{Space}-u{Space}origin{Space}master{Enter}
 	Sleep, 300
+
+	MsgBox, 48, Success!, %CurrTime%.
 Return
 
 
@@ -387,15 +398,47 @@ Esc::
 Return
 #If
 
+F20::
+Gosub, ScanGit
+If !WinExist("ahk_exe chrome.exe") {
+	Run, %A_ProgramFiles% (x86)\Google\Chrome\Application\chrome.exe
+	WinWaitActive, New Tab - Google Chrome
+		If ErrorLevel
+			{
+				MsgBox, 16, Chrome has failed, The window was never activated.
+				Return
+			}
+	} Else {
+		WinActivate, ahk_exe chrome.exe
+			WinWaitActive, ahk_exe chrome.exe
+			If ErrorLevel
+				{
+					MsgBox, 16, Chrome has failed, The window was never activated.
+					Return
+				}
+		IfWinActive, ahk_exe chrome.exe
+	 	{
+	 		Send, {CtrlDown}{t}{CtrlUp}
+	 		Sleep, 100
+			SendInput, {Raw}https://github.com/
+			Send, %GitUsername%
+			SendInput, {Raw}/
+			Send, %GitFolder%
+			Sleep, 50
+			Send, {Enter}
+		}
+	}
+Return
+
 
 ; Tray Menu on taskbar
 GenerateMenu:
 	MenuArray 	:= 	["Dir1", "Dir2", "Dir3", "Change Dir 1", "Change Dir 2", "Change Dir 3"
-				   , "Create New Repository", "Automate First Commit"
+				   , "GitUser", "Create New Repository", "Automate First Commit"
 				   , "Open Working Directory", "Directories", "Flip slashes"
 				   , "Reload", "Suspend", "Kill"]
 	LabelArray 	:=  ["TrayDir1", "TrayDir2", "TrayDir3", "ChangeDir4", "ChangeDir5", "ChangeDir6"
-				   , "TrayNewRepo", "TrayAutoCommit"
+				   , "gGitUser", "TrayNewRepo", "TrayAutoCommit"
 				   , "TrayWorkingDirectory", ":Directories", "ConvertPath"
 				   , "TrayReload", "TraySuspend", "TrayExit"]
 
@@ -404,7 +447,7 @@ GenerateMenu:
 		{
 		If (A_Index = 4)
 			Menu, Directories, Add
-		If ((A_Index = 9) || (A_Index = 12))
+		If ((A_Index = 10) || (A_Index = 13))
 			Menu, Tray, Add
 			if (A_Index < 7)
 				{
@@ -441,6 +484,9 @@ GenerateMenu:
 
 	TrayReload:
 	Reload
+	Return
+
+	gGitUser:
 	Return
 
 	ActivateGit:
@@ -484,12 +530,11 @@ GenerateMenu:
 		Continue
 		InputBox, NewDir%A_Index%, Changing Directory %A_Index%, Enter new directory:,,, 100
 			if ErrorLevel {
-				MsgBox % "Change Directory cancelled"
+				MsgBox, 16, Change Directory cancelled, You've interrupted the script.
 				Return
 			}
 		Directory%A_Index% := NewDir%A_Index%
 	}
-	; MsgBox % A_ThisMenu "`r`n" A_ThisMenuItem "`r`n" A_ThisMenuItemPos
 
 	Gosub, DirectoryPreviewChange
 	Return
@@ -509,15 +554,29 @@ GenerateMenu:
 	Gosub, PushRepo
 	Return
 
+	InputUsername:
+	InputBox, GitUsername, Enter your GitHub username:,,,, 100
+		if ErrorLevel {
+			MsgBox, 16, You're not ready to Gitinit, Please have a GitHub account prior to using this script.
+			ExitApp
+		}
+
+	; auto-fill
+	; If WinActive("ahk_exe autohotkey.exe") {
+	; 	SendInput, Contactician{Enter}	
+	; }
+	
+	Return
+
 	DirectoryPreview:
 	Loop, 3
 		{
 		StringGetPos, Dir%A_Index%Cut, Directory%A_Index%, \, R
 		Dir%A_Index%Preview := "../" . SubStr(Directory%A_Index%, Dir%A_Index%Cut + 2, (StrLen(Directory%A_Index%) - Dir%A_Index%Cut + 1))
 		; Menu, Directories, Rename, % Dir%A_Index%, % Dir%A_Index%Preview
-		; Menu, Directories, Disable, Change Dir %A_Index%
+		Menu, Tray, Disable, GitUser
 		}
-
+		Menu, Tray, Rename, GitUser, %GitUsername%
 		Menu, Directories, Rename, Dir1, %Dir1Preview%
 		Menu, Directories, Rename, Dir2, %Dir2Preview%
 		Menu, Directories, Rename, Dir3, %Dir3Preview%
