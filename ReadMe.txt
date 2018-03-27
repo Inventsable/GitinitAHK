@@ -1,11 +1,10 @@
 ---  3/26/18  -  Gitinit launch
 
-NOTE: You must change the repositories of this script manually in the .ahk code before using it to full capacity, by default the repository is GitinitAHK/Sandbox.
+NOTE: The default repository is GitinitAHK/Sandbox and can be modified in code to be at any specified location, all 3 can be changed at any time with the Directories > Change Dir# selections.
 
 See https://github.com/Contactician/Gitinit.AHK/wiki for visual guides, hotkey chart and flowchart.
 
-This is a script for creating empty repositories and syncing them to GitHub, along with basic hotkeys for GitBash.
-
+This is a script for creating empty repositories and syncing them to GitHub, speeding up the workflow for commits and basic actions, and supplementing GitBash with Windows-friendly hotkeys.
 
 _____________________
 ||| MANUAL METHOD |||
