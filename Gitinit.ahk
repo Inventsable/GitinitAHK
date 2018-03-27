@@ -181,10 +181,31 @@ Gosub, DirectoryPreview
 		SendInput, {Enter}
 		Return 
 
+	^Right::
+		SendInput, {Raw}touch .html
+		SendInput, {Left 5}
+		Return
+
+	^+Right::
+		SendInput, {Raw}touch .css
+		SendInput, {Left 4}
+		Return
+
+	!Right::
+		SendInput, {Raw}touch .txt
+		SendInput, {Left 4}
+		Return
+
 	^!Right::
 		SendInput, {Raw}echo "" >> .txt
 		SendInput, {Left 9}
 		Return
+
+
+
+F19::
+	WinSet, Style, ^0xC00000, ahk_exe mintty.exe
+Return
 
 
 ; Scan directory folder for Git
@@ -494,7 +515,7 @@ GenerateMenu:
 		StringGetPos, Dir%A_Index%Cut, Directory%A_Index%, \, R
 		Dir%A_Index%Preview := "../" . SubStr(Directory%A_Index%, Dir%A_Index%Cut + 2, (StrLen(Directory%A_Index%) - Dir%A_Index%Cut + 1))
 		; Menu, Directories, Rename, % Dir%A_Index%, % Dir%A_Index%Preview
-		Menu, Directories, Disable, Change Dir %A_Index%
+		; Menu, Directories, Disable, Change Dir %A_Index%
 		}
 
 		Menu, Directories, Rename, Dir1, %Dir1Preview%
@@ -510,10 +531,11 @@ GenerateMenu:
 			If (A_Index < DirNum)
 			Continue
 		StringGetPos, Dir%A_Index%Cut, Directory%A_Index%, \, R
-		Dir%A_Index%Preview := "../" . SubStr(Directory%A_Index%, Dir%A_Index%Cut + 2, (StrLen(Directory%A_Index%) - Dir%A_Index%Cut + 1))
+		Dir%A_Index%PreviewNEW := "../" . SubStr(Directory%A_Index%, Dir%A_Index%Cut + 2, (StrLen(Directory%A_Index%) - Dir%A_Index%Cut + 1))
 		}
 
-		Menu, Directories, Rename, % NewDir%DirNum%, % Dir%DirNum%Preview
+		Menu, Directories, Rename, % Dir%DirNum%Preview, % Dir%DirNum%PreviewNEW
+		; Menu, Directories, Rename, % NewDir%DirNum%, % Dir%DirNum%Preview
 	Return
 
 	TrayExit:
